@@ -3,12 +3,76 @@
  */
 package alice;
 
+import org.w3c.dom.stylesheets.DocumentStyle;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Scanner;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    public static void main(String[] args) throws IOException {
+        // PD: how man times does "Alice" show up in the file alice_wonderland.txt
+
+        // Find the file
+        Path alicePath = Paths.get("a.txt");
+        System.out.println(alicePath.toAbsolutePath());
+        // Read the file - Scanner
+        Scanner scanner = null;
+        scanner = new Scanner(alicePath);
+
+        String characterName = "Alice";
+        HashMap<String, Integer> aliceMap = new HashMap<>();
+        aliceMap.put(characterName, 0);
+        // Logic the File -> look for "Alice" instances
+        while(scanner.hasNextLine()){
+            // check every line for Alice
+            String currentLine = scanner.nextLine();
+            if(currentLine.contains(characterName)){
+                // If any, put in HashMap
+                aliceMap.put(characterName, (aliceMap.get(characterName) + 1));
+            }
+        }
+        // return how many times Alice showed up
+        System.out.println("how many times Alice showed up " + aliceMap.get(characterName));
+    }
+
+    public static void readBufferTryCatch() throws IOException {
+        // find the file, Read the file, logic
+        Path alicePath = Paths.get("alice_in_wonderland.txt");
+        BufferedReader reader = null;
+        try {
+            reader = Files.newBufferedReader(alicePath);
+            String currentLine = reader.readLine();
+            while(currentLine != null){
+                currentLine = reader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            reader.close();
+        }
+    }
+
+    // THIS IS GOLD!!! CHoose this strategy
+    public static void readBufferTryWithResources(){
+        Path alicePath = Paths.get("alice_in_wonderland.txt");
+        try(BufferedReader reader = Files.newBufferedReader(alicePath)){
+            String currentLine = reader.readLine();
+            while(currentLine != null){
+                currentLine = reader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
+
