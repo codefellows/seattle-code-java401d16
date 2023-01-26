@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<!--<a th:href="@{/order/details(id=3)}">-->
+<!--"@{/category/edit/{id}(id=${category.idCategory})}"-->
+
+    <!--stores come from our controller. GET /stores-->
+<ul th:each="salmonStore : ${stores}">
+    <a th:href="@{/stores/{id}(id=${salmonStore.id})}">Click here to go this store</a>
+    <!--notice the string we create within thymeleaf-->
+    <li th:text="'Store name: ' + ${salmonStore.name}"></li>
+    <li th:text="'Average cookies per day: '+ ${salmonStore.averageCookiesPerDay}"></li>
+    <div>Employees:</div>
+    <ul th:each="employee : ${salmonStore.employees}">
+        <li th:text="${employee.name}"></li>
+        <li th:text="${employee.payPerHour}"></li>
+    </ul>
+    <form action="/employee" method="POST">
+        <fieldset>
+            <legend>Add an Employee to this store</legend>
+            <label>Employee name</label>
+            <input type="text" name="name">
+            <label>Pay Per Hour:</label>
+            <input type="text" name="payPerHour">
+            <input type="hidden" name="storeName" th:value="${salmonStore.name}">
+            <input type="submit" value="Add Employee to this store">
+        </fieldset>
+    </form>
+</ul>
+
+<!--Form goes here-->
+    <form action="/stores" method="POST">
+        <fieldset>
+            <legend>Add Salmon Cookies Store</legend>
+            <label> Store name</label>
+            <input type="text" name="name"/>
+            <label>Average Cookies Per Day</label>
+            <input type="text" name="averageCookiesPerDay">
+            <input type="submit" value="Add Store">
+        </fieldset>
+    </form>
+</body>
+</html>
