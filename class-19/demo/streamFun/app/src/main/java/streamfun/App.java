@@ -3,12 +3,143 @@
  */
 package streamfun;
 
+import java.awt.image.AreaAveragingScaleFilter;
+import java.lang.invoke.CallSite;
+import java.util.*;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.*;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+    private static List<Java401Person> setup() {
+        List<Java401Person> java401People = new ArrayList<>();
+        // TODO: create people and populate the java401People list!
+        return java401People;
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        List<Java401Person> people = setup();
+
+
+
+        // ***** TEST CASE 1 *****
+
+        System.out.println("Test Case 1 Imperative: Print the first 10 numbers");
+
+        System.out.println("Test Case 1 Functional:");
+
+
+
+        // ***** TEST CASE 2 *****
+
+        System.out.println("Test Case 2 I(mperative): Print the last 5 numbers (from 1-10)");
+        int[] numbersFrom1To10Array = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+        System.out.println("Test Case 2 F(unctional):");
+
+
+
+        // ***** TEST CASE 3 *****
+
+        // use numbersFrom1To10Array from TEST CASE 2
+        System.out.println("Test Case 3 I: Print the first 5 numbers (starting with 1)");
+
+        System.out.println("Test Case 3 F:");
+
+
+
+        // ***** TEST CASE 4 *****
+
+        System.out.println("Test Case 4 I: Print the number of people in our class");
+
+        System.out.println("Test Case 4 F:");
+
+
+
+        // ***** TEST CASE 5 *****
+
+        System.out.println("Test Case 5 I: Print out if anyone is tired");
+
+        System.out.println("Test Case 5 F:");
+        // Method 1: findAny()/findFirst()
+
+        // Method 2: anyMatch()
+
+
+
+        // ***** TEST CASE 6 *****
+
+        System.out.println("Test Case 6 I: Print out if everyone is smart");
+
+        System.out.println("Test Case 6 F:");
+        // Method 1: noneMatch()
+
+        // Method 2: allMatch()
+
+
+
+        // ***** TEST CASE 7 *****
+
+        System.out.println("Test Case 7 I: Print out the sum of all our pet numbers, and print the average");
+
+        System.out.println("Test Case 7 F:");
+
+
+
+        // ***** TEST CASE 8 *****
+
+        System.out.println("Test Case 8 I: Print how many people are tired, and not tired");
+
+        System.out.println("Test Case 8 F:");
+
+
+
+        // ***** TEST CASE 9 *****
+
+        System.out.println("Test Case 9 I: Print out all our names in sorted alphabetical order (ascending)");
+
+        System.out.println("Test Case 9 F:");
+
+
+
+        // ***** TEST CASE 10 *****
+
+        System.out.println("Test Case 10 I: Print out all our names, separated by semicolons");
+
+        System.out.println("Test Case 10 F:");
+
+
+
+        // ***** TEST CASE 11 *****
+
+        System.out.println("Test Case 11 I: Print out all our distinct hobbies");
+
+        System.out.println("Test Case 11 F:");
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
