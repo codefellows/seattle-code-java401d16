@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BuyStuff</string>
+    <string name="helloWorld">Hello World</string>
+    <string name="name">Name:</string>
+    <string name="inputName">Name</string>
+    <string name="submit">Submit</string>
+    <string name="placeholderImageDescription">placeholder image of green grid</string>
+    <string name="orderFormTitle">Order Form</string>
+    <string name="productName">Product Name</string>
+    <string name="orderForm">Order Form</string>
+</resources>
