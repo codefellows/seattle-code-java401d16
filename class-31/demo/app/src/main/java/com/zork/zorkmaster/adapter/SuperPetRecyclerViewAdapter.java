@@ -10,9 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.amplifyframework.datastore.generated.model.SuperPet;
 import com.zork.zorkmaster.R;
 import com.zork.zorkmaster.activities.SuperPetDetails;
-import com.zork.zorkmaster.model.SuperPet;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class SuperPetRecyclerViewAdapter extends RecyclerView.Adapter<SuperPetRe
         // TODO Step 6-2 refactor the rendering
         SuperPet superPet = superPetList.get(position);
         superPetFragNameView.setText((position+1) + ". " + superPet.getName()
-        + "\n" + superPet.getHeight() + "\n" + superPet.getBirthDate()
+        + "\n" + superPet.getHeight()
         );
         View superPetViewHolder = holder.itemView;
         superPetViewHolder.setOnClickListener(v -> {
@@ -61,10 +61,7 @@ public class SuperPetRecyclerViewAdapter extends RecyclerView.Adapter<SuperPetRe
     }
 
     @Override
-    // TODO Step 1-10: (In RecyclerViewAdapter.getItemCount()) For testing purposes, hardcode a large number of items
     public int getItemCount() {
-//        return 100;
-        // TODO Step 2-5: (In RecyclerViewAdapter.getItemCount()) Make the size of the list dynamic
         return superPetList.size();
     }
 
