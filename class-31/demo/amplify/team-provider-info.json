@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-zorkiemaster-dev-110123-authRole",
+      "UnauthRoleArn": "arn:aws:iam::582540622287:role/amplify-zorkiemaster-dev-110123-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::582540622287:role/amplify-zorkiemaster-dev-110123-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-zorkiemaster-dev-110123-deployment",
+      "UnauthRoleName": "amplify-zorkiemaster-dev-110123-unauthRole",
+      "StackName": "amplify-zorkiemaster-dev-110123",
+      "StackId": "arn:aws:cloudformation:us-west-2:582540622287:stack/amplify-zorkiemaster-dev-110123/f8c87460-b150-11ed-98a2-06f66b9aa515",
+      "AmplifyAppId": "d3qfuesvbiqdsv"
+    }
+  }
+}
