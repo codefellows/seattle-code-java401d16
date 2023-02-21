@@ -2,19 +2,25 @@ package com.zork.zorkmaster.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.amplifyframework.api.graphql.model.ModelMutation;
+import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.generated.model.SuperPet;
+import com.amplifyframework.datastore.generated.model.SuperPetTypeEnum;
 import com.zork.zorkmaster.R;
-import com.zork.zorkmaster.model.SuperPet;
 
 import java.util.Date;
 
 public class AddASuperPetActivity extends AppCompatActivity {
+    public final static String TAG = "AddASuperPetActivity";
     Spinner superPetTypeSpinner;
 
     @Override
@@ -31,19 +37,24 @@ public class AddASuperPetActivity extends AppCompatActivity {
         superPetTypeSpinner.setAdapter(new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                SuperPet.SuperPetTypeEnum.values()
+                SuperPetTypeEnum.values()
         ));
     }
 
     public void setupSaveBttn(){
         findViewById(R.id.AddASuperPetSaveBttn).setOnClickListener(v -> {
-            SuperPet newSuperPet = new SuperPet(
-                    ((EditText)findViewById(R.id.AddASuperPetETName)).getText().toString(),
-                    SuperPet.SuperPetTypeEnum.fromString(superPetTypeSpinner.getSelectedItem().toString()),
-                    new Date(),
-                    Integer.parseInt(((EditText)findViewById(R.id.AddASuperPetETHeight)).getText().toString())
+            // TODO implement superPet builder pattern
+            SuperPet newSuperPet = SuperPet.builder()
+                    .name(((EditText)findViewById(R.id.AddASuperPetETName)).getText().toString())
+                    .type((SuperPetTypeEnum) superPetTypeSpinner.getSelectedItem())
+                    .height(Integer.parseInt(((EditText)findViewById(R.id.AddASuperPetETHeight)).getText().toString()))
+                    .build();
+
+            Amplify.API.mutate(
+                    ModelMutation.create(newSuperPet),
+                    success -> Log.i(TAG, "Made a superPet successfully!"),
+                    failure -> Log.e(TAG, "FAILED to make superPet", failure)
             );
-//            zorkMasterDatabase.superPetDao().insertASuperPet(newSuperPet); TODO // COMMENT OUT. THIS IS WHERE AMPLIFY CALLS WILL GO
             Toast.makeText(this, "SuperPet Saved!", Toast.LENGTH_SHORT).show();
         });
     }
