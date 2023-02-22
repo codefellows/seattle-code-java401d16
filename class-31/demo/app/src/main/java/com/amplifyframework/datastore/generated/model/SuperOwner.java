@@ -1,6 +1,6 @@
 package com.amplifyframework.datastore.generated.model;
 
-import com.amplifyframework.core.model.annotations.BelongsTo;
+import com.amplifyframework.core.model.annotations.HasMany;
 import com.amplifyframework.core.model.temporal.Temporal;
 
 import java.util.List;
@@ -20,23 +20,19 @@ import com.amplifyframework.core.model.query.predicate.QueryField;
 
 import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 
-/** This is an auto generated class representing the SuperPet type in your schema. */
+/** This is an auto generated class representing the SuperOwner type in your schema. */
 @SuppressWarnings("all")
-@ModelConfig(pluralName = "SuperPets", authRules = {
+@ModelConfig(pluralName = "SuperOwners", authRules = {
   @AuthRule(allow = AuthStrategy.PUBLIC, operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
 })
-@Index(name = "byOwners", fields = {"superOwnerId","name"})
-public final class SuperPet implements Model {
-  public static final QueryField ID = field("SuperPet", "id");
-  public static final QueryField NAME = field("SuperPet", "name");
-  public static final QueryField TYPE = field("SuperPet", "type");
-  public static final QueryField HEIGHT = field("SuperPet", "height");
-  public static final QueryField SUPER_OWNER = field("SuperPet", "superOwnerId");
+public final class SuperOwner implements Model {
+  public static final QueryField ID = field("SuperOwner", "id");
+  public static final QueryField NAME = field("SuperOwner", "name");
+  public static final QueryField EMAIL = field("SuperOwner", "email");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="String", isRequired = true) String name;
-  private final @ModelField(targetType="SuperPetTypeEnum") SuperPetTypeEnum type;
-  private final @ModelField(targetType="Int") Integer height;
-  private final @ModelField(targetType="SuperOwner") @BelongsTo(targetName = "superOwnerId", type = SuperOwner.class) SuperOwner superOwner;
+  private final @ModelField(targetType="String") String email;
+  private final @ModelField(targetType="SuperPet") @HasMany(associatedWith = "superOwner", type = SuperPet.class) List<SuperPet> superPets = null;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   public String getId() {
@@ -47,16 +43,12 @@ public final class SuperPet implements Model {
       return name;
   }
   
-  public SuperPetTypeEnum getType() {
-      return type;
+  public String getEmail() {
+      return email;
   }
   
-  public Integer getHeight() {
-      return height;
-  }
-  
-  public SuperOwner getSuperOwner() {
-      return superOwner;
+  public List<SuperPet> getSuperPets() {
+      return superPets;
   }
   
   public Temporal.DateTime getCreatedAt() {
@@ -67,12 +59,10 @@ public final class SuperPet implements Model {
       return updatedAt;
   }
   
-  private SuperPet(String id, String name, SuperPetTypeEnum type, Integer height, SuperOwner superOwner) {
+  private SuperOwner(String id, String name, String email) {
     this.id = id;
     this.name = name;
-    this.type = type;
-    this.height = height;
-    this.superOwner = superOwner;
+    this.email = email;
   }
   
   @Override
@@ -82,14 +72,12 @@ public final class SuperPet implements Model {
       } else if(obj == null || getClass() != obj.getClass()) {
         return false;
       } else {
-      SuperPet superPet = (SuperPet) obj;
-      return ObjectsCompat.equals(getId(), superPet.getId()) &&
-              ObjectsCompat.equals(getName(), superPet.getName()) &&
-              ObjectsCompat.equals(getType(), superPet.getType()) &&
-              ObjectsCompat.equals(getHeight(), superPet.getHeight()) &&
-              ObjectsCompat.equals(getSuperOwner(), superPet.getSuperOwner()) &&
-              ObjectsCompat.equals(getCreatedAt(), superPet.getCreatedAt()) &&
-              ObjectsCompat.equals(getUpdatedAt(), superPet.getUpdatedAt());
+      SuperOwner superOwner = (SuperOwner) obj;
+      return ObjectsCompat.equals(getId(), superOwner.getId()) &&
+              ObjectsCompat.equals(getName(), superOwner.getName()) &&
+              ObjectsCompat.equals(getEmail(), superOwner.getEmail()) &&
+              ObjectsCompat.equals(getCreatedAt(), superOwner.getCreatedAt()) &&
+              ObjectsCompat.equals(getUpdatedAt(), superOwner.getUpdatedAt());
       }
   }
   
@@ -98,9 +86,7 @@ public final class SuperPet implements Model {
     return new StringBuilder()
       .append(getId())
       .append(getName())
-      .append(getType())
-      .append(getHeight())
-      .append(getSuperOwner())
+      .append(getEmail())
       .append(getCreatedAt())
       .append(getUpdatedAt())
       .toString()
@@ -110,12 +96,10 @@ public final class SuperPet implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("SuperPet {")
+      .append("SuperOwner {")
       .append("id=" + String.valueOf(getId()) + ", ")
       .append("name=" + String.valueOf(getName()) + ", ")
-      .append("type=" + String.valueOf(getType()) + ", ")
-      .append("height=" + String.valueOf(getHeight()) + ", ")
-      .append("superOwner=" + String.valueOf(getSuperOwner()) + ", ")
+      .append("email=" + String.valueOf(getEmail()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
@@ -134,11 +118,9 @@ public final class SuperPet implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    */
-  public static SuperPet justId(String id) {
-    return new SuperPet(
+  public static SuperOwner justId(String id) {
+    return new SuperOwner(
       id,
-      null,
-      null,
       null,
       null
     );
@@ -147,9 +129,7 @@ public final class SuperPet implements Model {
   public CopyOfBuilder copyOfBuilder() {
     return new CopyOfBuilder(id,
       name,
-      type,
-      height,
-      superOwner);
+      email);
   }
   public interface NameStep {
     BuildStep name(String name);
@@ -157,30 +137,24 @@ public final class SuperPet implements Model {
   
 
   public interface BuildStep {
-    SuperPet build();
+    SuperOwner build();
     BuildStep id(String id);
-    BuildStep type(SuperPetTypeEnum type);
-    BuildStep height(Integer height);
-    BuildStep superOwner(SuperOwner superOwner);
+    BuildStep email(String email);
   }
   
 
   public static class Builder implements NameStep, BuildStep {
     private String id;
     private String name;
-    private SuperPetTypeEnum type;
-    private Integer height;
-    private SuperOwner superOwner;
+    private String email;
     @Override
-     public SuperPet build() {
+     public SuperOwner build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
         
-        return new SuperPet(
+        return new SuperOwner(
           id,
           name,
-          type,
-          height,
-          superOwner);
+          email);
     }
     
     @Override
@@ -191,20 +165,8 @@ public final class SuperPet implements Model {
     }
     
     @Override
-     public BuildStep type(SuperPetTypeEnum type) {
-        this.type = type;
-        return this;
-    }
-    
-    @Override
-     public BuildStep height(Integer height) {
-        this.height = height;
-        return this;
-    }
-    
-    @Override
-     public BuildStep superOwner(SuperOwner superOwner) {
-        this.superOwner = superOwner;
+     public BuildStep email(String email) {
+        this.email = email;
         return this;
     }
     
@@ -220,12 +182,10 @@ public final class SuperPet implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String name, SuperPetTypeEnum type, Integer height, SuperOwner superOwner) {
+    private CopyOfBuilder(String id, String name, String email) {
       super.id(id);
       super.name(name)
-        .type(type)
-        .height(height)
-        .superOwner(superOwner);
+        .email(email);
     }
     
     @Override
@@ -234,18 +194,8 @@ public final class SuperPet implements Model {
     }
     
     @Override
-     public CopyOfBuilder type(SuperPetTypeEnum type) {
-      return (CopyOfBuilder) super.type(type);
-    }
-    
-    @Override
-     public CopyOfBuilder height(Integer height) {
-      return (CopyOfBuilder) super.height(height);
-    }
-    
-    @Override
-     public CopyOfBuilder superOwner(SuperOwner superOwner) {
-      return (CopyOfBuilder) super.superOwner(superOwner);
+     public CopyOfBuilder email(String email) {
+      return (CopyOfBuilder) super.email(email);
     }
   }
   

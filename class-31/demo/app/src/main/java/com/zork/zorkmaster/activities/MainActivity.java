@@ -28,15 +28,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // HARDCODE TEST for recyclerView
-//        superPetList = new ArrayList<>();
-//        SuperPet newPet = SuperPet.builder()
-//                .name("Zorkie")
-//                .height(20)
-//                .type(SuperPetTypeEnum.Fire)
-//                .build();
-//
-//        superPetList.add(newPet);
         setupBttns();
         setUpRecyclerView();
     }
@@ -50,7 +41,12 @@ public class MainActivity extends AppCompatActivity {
                     superPetList.clear();
                     Log.i(TAG, "Read SuperPets successfully!");
                     for (SuperPet databaseSuperPet : success.getData()) {
-                        superPetList.add(databaseSuperPet);
+                        String selectedOwnerName = "Devon";
+                        if (databaseSuperPet.getSuperOwner() != null){
+                            if (databaseSuperPet.getSuperOwner().getName().equals(selectedOwnerName)){
+                                superPetList.add(databaseSuperPet);
+                            }
+                        }
                     }
                     runOnUiThread(() -> adapter.notifyDataSetChanged()); // since this runs asynchronously, the adapter may already have rendered, so we have to tell it to update
                 },
