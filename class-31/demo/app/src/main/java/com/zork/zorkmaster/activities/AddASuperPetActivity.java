@@ -2,11 +2,11 @@ package com.zork.zorkmaster.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.nfc.Tag;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -20,7 +20,7 @@ import com.amplifyframework.datastore.generated.model.SuperPetTypeEnum;
 import com.zork.zorkmaster.R;
 
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -67,7 +67,7 @@ public class AddASuperPetActivity extends AppCompatActivity {
         Amplify.API.query(
                 ModelQuery.list(SuperOwner.class),
                 success -> {
-                    Log.i(TAG, "Read superOWners successfully!");
+                    Log.i(TAG, "Read superOwners successfully!");
                     for (SuperOwner databaseSuperOwners : success.getData()) {
                         ownerNames.add(databaseSuperOwners.getName());
                         superOwners.add(databaseSuperOwners);

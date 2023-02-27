@@ -11,6 +11,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZorkMaster">
         <activity
+            android:name=".activities.authActivities.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.authActivities.VerifySignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.authActivities.SignUpActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.AddASuperPetActivity"
             android:exported="false" />
         <activity
