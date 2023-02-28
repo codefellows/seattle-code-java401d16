@@ -7,16 +7,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.SuperPet;
 import com.zork.zorkmaster.R;
+import com.zork.zorkmaster.activities.authActivities.LoginActivity;
+import com.zork.zorkmaster.activities.authActivities.SignUpActivity;
 import com.zork.zorkmaster.adapter.SuperPetRecyclerViewAdapter;
 
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "mainActivity";
@@ -30,6 +35,42 @@ public class MainActivity extends AppCompatActivity {
 
         setupBttns();
         setUpRecyclerView();
+
+//        Amplify.Auth.signUp(
+//                "alex.white@codefellows.com",
+//                "p@ssword",
+//                AuthSignUpOptions.builder()
+//                        .userAttribute(AuthUserAttributeKey.email(), "alex.white@codefellows.com")
+//                        .userAttribute(AuthUserAttributeKey.nickname(), "Firefly")
+//                        .build(),
+//                success -> Log.i(TAG, "Sign Up success!"),
+//                failure -> Log.e(TAG, "Sign up failed with email: alex.white@codefellows.com" + failure)
+//                );
+
+//        Amplify.Auth.confirmSignUp(
+//                "alex.white@codefellows.com",
+//                "212348",
+//                success -> Log.i(TAG, "Confirmed signed up success!"),
+//                failure -> Log.e(TAG, "confirm sign up up failed with email: alex.white@codefellows.com" + failure)
+//        );
+
+//        Amplify.Auth.signIn(
+//                "alex.white@codefellows.com",
+//                "p@ssword",
+//                success -> Log.i(TAG, "signed in success!"),
+//                failure -> Log.e(TAG, "sign in failed with email: alex.white@codefellows.com" + failure)
+//        );
+
+//        Amplify.Auth.fetchAuthSession(
+//                success -> Log.i(TAG, "CURRENT AUTH SESS" + success),
+//                failure -> Log.e(TAG, "Failed to fetch auth sess" + failure)
+//        );
+
+        // LOGOUT
+//        Amplify.Auth.signOut(
+//                success -> Log.i(TAG, "SIGNED OUT!!!")
+//        );
+
     }
 
     @Override
@@ -65,9 +106,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupBttns(){
+        // Add a super pet Button
         findViewById(R.id.MainActivityBttnAddASuperPet).setOnClickListener(v -> {
             Intent goToAddASuperPetIntent = new Intent(this, AddASuperPetActivity.class);
             startActivity(goToAddASuperPetIntent);
                 });
+
+        AtomicReference<String> username = new AtomicReference<>("");
+        // we need to get access to current auth user
+        Amplify.Auth.getCurrentUser(
+                success -> {
+                    Log.i(TAG, "Got current user");
+                    username.set(success.getUsername());
+                },
+                failure -> {}
+        );
+
+        if (username.toString().equals("")) {
+        // if auth user is null
+            // show sign up and login buttons
+            ((Button)findViewById(R.id.MainActivityButtonSignUp)).setVisibility(View.VISIBLE);
+            ((Button)findViewById(R.id.MainActivityButtonLogin)).setVisibility(View.VISIBLE);
+            // hide logout bttn
+        } else {
+            ((Button)findViewById(R.id.MainActivityButtonSignUp)).setVisibility(View.INVISIBLE);
+            ((Button)findViewById(R.id.MainActivityButtonLogin)).setVisibility(View.INVISIBLE);
+            // show logout bttn
+        }
+        // else
+            // only show logout button
+
+
+        // Login Button
+        findViewById(R.id.MainActivityButtonLogin).setOnClickListener(v -> {
+            Intent goToLoginActivityIntent = new Intent(this, LoginActivity.class);
+            startActivity(goToLoginActivityIntent);
+        });
+
+        // Sign Up Button
+        findViewById(R.id.MainActivityButtonSignUp).setOnClickListener(v -> {
+            Intent goToSignUpActivityIntent = new Intent(this, SignUpActivity.class);
+            startActivity(goToSignUpActivityIntent);
+        });
+
+        // logout Button
+
     }
 }
