@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.auth.AuthUser;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.SuperPet;
 import com.zork.zorkmaster.R;
@@ -21,56 +22,29 @@ import com.zork.zorkmaster.adapter.SuperPetRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "mainActivity";
     List<SuperPet> superPetList;
     SuperPetRecyclerViewAdapter adapter;
+    AuthUser authUser;
+    Button addASuperPetButton;
+    Button loginButton;
+    Button signUpButton;
+    Button logoutButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        addASuperPetButton = findViewById(R.id.MainActivityBttnAddASuperPet);
+        loginButton = findViewById(R.id.MainActivityButtonLogin);
+        signUpButton = findViewById(R.id.MainActivityButtonSignUp);
+        logoutButton = findViewById(R.id.MainActivityButtonLogout);
 
         setupBttns();
         setUpRecyclerView();
-
-//        Amplify.Auth.signUp(
-//                "alex.white@codefellows.com",
-//                "p@ssword",
-//                AuthSignUpOptions.builder()
-//                        .userAttribute(AuthUserAttributeKey.email(), "alex.white@codefellows.com")
-//                        .userAttribute(AuthUserAttributeKey.nickname(), "Firefly")
-//                        .build(),
-//                success -> Log.i(TAG, "Sign Up success!"),
-//                failure -> Log.e(TAG, "Sign up failed with email: alex.white@codefellows.com" + failure)
-//                );
-
-//        Amplify.Auth.confirmSignUp(
-//                "alex.white@codefellows.com",
-//                "212348",
-//                success -> Log.i(TAG, "Confirmed signed up success!"),
-//                failure -> Log.e(TAG, "confirm sign up up failed with email: alex.white@codefellows.com" + failure)
-//        );
-
-//        Amplify.Auth.signIn(
-//                "alex.white@codefellows.com",
-//                "p@ssword",
-//                success -> Log.i(TAG, "signed in success!"),
-//                failure -> Log.e(TAG, "sign in failed with email: alex.white@codefellows.com" + failure)
-//        );
-
-//        Amplify.Auth.fetchAuthSession(
-//                success -> Log.i(TAG, "CURRENT AUTH SESS" + success),
-//                failure -> Log.e(TAG, "Failed to fetch auth sess" + failure)
-//        );
-
-        // LOGOUT
-//        Amplify.Auth.signOut(
-//                success -> Log.i(TAG, "SIGNED OUT!!!")
-//        );
-
     }
 
     @Override
@@ -83,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, "Read SuperPets successfully!");
                     for (SuperPet databaseSuperPet : success.getData()) {
                         String selectedOwnerName = "Devon";
-                        if (databaseSuperPet.getSuperOwner() != null){
-                            if (databaseSuperPet.getSuperOwner().getName().equals(selectedOwnerName)){
+                        if (databaseSuperPet.getSuperOwner() != null) {
+                            if (databaseSuperPet.getSuperOwner().getName().equals(selectedOwnerName)) {
                                 superPetList.add(databaseSuperPet);
                             }
                         }
@@ -93,9 +67,38 @@ public class MainActivity extends AppCompatActivity {
                 },
                 failure -> Log.e(TAG, "FAILED to read superPets from the Datatbase")
         );
+
+        Amplify.Auth.getCurrentUser(
+                success -> {
+                    Log.i(TAG, "User Authenticated with username: " + success.getUsername());
+                    authUser = success;
+                    runOnUiThread(this::renderButtons);
+                },
+                failure -> {
+                    Log.w(TAG, "There is no current authenticated User");
+                    authUser = null;
+                    runOnUiThread(this::renderButtons);
+                }
+        );
+
     }
 
-    public void setUpRecyclerView(){
+    public void renderButtons(){
+        // Conditional Button Rendering
+        // if authUser is null -> Show signUp/login bttn and hide logout bttns
+        if (authUser == null) {
+            signUpButton.setVisibility(View.VISIBLE);
+            loginButton.setVisibility(View.VISIBLE);
+            logoutButton.setVisibility(View.INVISIBLE);
+        } else if (authUser != null) {
+            // if authUser is notNull -> Show logout and hide signUp/login bttns
+            signUpButton.setVisibility(View.INVISIBLE);
+            loginButton.setVisibility(View.INVISIBLE);
+            logoutButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setUpRecyclerView() {
         superPetList = new ArrayList<>();
         RecyclerView superPetRecyclerView = findViewById(R.id.MainActivityRecyclerViewSuperPet);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -105,51 +108,32 @@ public class MainActivity extends AppCompatActivity {
         superPetRecyclerView.setAdapter(adapter);
     }
 
-    public void setupBttns(){
-        // Add a super pet Button
-        findViewById(R.id.MainActivityBttnAddASuperPet).setOnClickListener(v -> {
+    public void setupBttns() {
+        // Add a SuperPet Button
+        addASuperPetButton.setOnClickListener(v -> {
             Intent goToAddASuperPetIntent = new Intent(this, AddASuperPetActivity.class);
             startActivity(goToAddASuperPetIntent);
-                });
-
-        AtomicReference<String> username = new AtomicReference<>("");
-        // we need to get access to current auth user
-        Amplify.Auth.getCurrentUser(
-                success -> {
-                    Log.i(TAG, "Got current user");
-                    username.set(success.getUsername());
-                },
-                failure -> {}
-        );
-
-        if (username.toString().equals("")) {
-        // if auth user is null
-            // show sign up and login buttons
-            ((Button)findViewById(R.id.MainActivityButtonSignUp)).setVisibility(View.VISIBLE);
-            ((Button)findViewById(R.id.MainActivityButtonLogin)).setVisibility(View.VISIBLE);
-            // hide logout bttn
-        } else {
-            ((Button)findViewById(R.id.MainActivityButtonSignUp)).setVisibility(View.INVISIBLE);
-            ((Button)findViewById(R.id.MainActivityButtonLogin)).setVisibility(View.INVISIBLE);
-            // show logout bttn
-        }
-        // else
-            // only show logout button
-
-
+        });
         // Login Button
-        findViewById(R.id.MainActivityButtonLogin).setOnClickListener(v -> {
+        loginButton.setOnClickListener(v -> {
             Intent goToLoginActivityIntent = new Intent(this, LoginActivity.class);
             startActivity(goToLoginActivityIntent);
         });
-
         // Sign Up Button
-        findViewById(R.id.MainActivityButtonSignUp).setOnClickListener(v -> {
+        signUpButton.setOnClickListener(v -> {
             Intent goToSignUpActivityIntent = new Intent(this, SignUpActivity.class);
             startActivity(goToSignUpActivityIntent);
         });
-
         // logout Button
+        logoutButton.setOnClickListener(v -> {
+            Amplify.Auth.signOut(
+                    success -> {
+                        Log.i(TAG, "User successfully logged out.");
+                        authUser = null;
+                        runOnUiThread(this::renderButtons);
+                    }
+            );
+        });
 
     }
 }
