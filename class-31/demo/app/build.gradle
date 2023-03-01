@@ -25,12 +25,16 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    namespace 'com.zork.zorkmaster'
 }
 
 dependencies {
+    implementation 'com.amplifyframework:aws-storage-s3:2.2.2'
     implementation 'com.amplifyframework:aws-auth-cognito:2.2.2'
     implementation 'com.amplifyframework:aws-api:2.2.2'
     implementation 'com.amplifyframework:aws-datastore:2.2.2'
+    implementation 'androidx.activity:activity-ktx:1.6.1'
+    implementation 'androidx.fragment:fragment-ktx:1.5.5'
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'

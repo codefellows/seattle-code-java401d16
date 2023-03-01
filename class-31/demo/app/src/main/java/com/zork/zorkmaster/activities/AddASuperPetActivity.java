@@ -1,8 +1,11 @@
 package com.zork.zorkmaster.activities;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -28,42 +31,24 @@ import java.util.concurrent.ExecutionException;
 public class AddASuperPetActivity extends AppCompatActivity {
     public final static String TAG = "AddASuperPetActivity";
     Spinner superPetTypeSpinner;
-    // Todo Step: 1-3 setup owner spinner
     Spinner superOwnerSpinner;
-    // Todo Step: 1-4 implement CompletableFuture
     CompletableFuture<List<SuperOwner>> superOwnersFuture = new CompletableFuture<>();
     ArrayList<String> ownerNames;
     ArrayList<SuperOwner> superOwners;
+    ActivityResultLauncher<Intent> activityResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_asuper_pet);
+
+        // WARNING: The ActivityResultLauncher MUST be initialized in onCreate(), not in onResume() or a click handler! Otherwise it will fail
+        activityResultLauncher = getImagePickingActivityResultLauncher();
         superPetTypeSpinner = findViewById(R.id.superPetTypeSpinner);
         superOwnerSpinner = findViewById(R.id.AddASuperPetActivityOwnerSpinner);
         ownerNames = new ArrayList<>();
         superOwners = new ArrayList<>();
-        // Todo Step: 1-2 hardcode/add 4 SuperOwners to AWS db
-        // Builder Pattern
-//        SuperOwner sharmarke = SuperOwner.builder()
-//                .name("Sharmarke")
-//                .build();
-//        SuperOwner devon = SuperOwner.builder()
-//                .name("Devon")
-//                .build();
-//        SuperOwner adrian = SuperOwner.builder()
-//                .name("Adrian")
-//                .build();
-//        SuperOwner ryan = SuperOwner.builder()
-//                .name("Ryan")
-//                .build();
-//        Amplify.API.mutate(
-//                ModelMutation.create(sharmarke),
-//                success -> {},
-//                failure -> {});
 
-        // TODO query and setup a spinner for super owners
-        // Compeletable Future
         Amplify.API.query(
                 ModelQuery.list(SuperOwner.class),
                 success -> {
@@ -97,7 +82,6 @@ public class AddASuperPetActivity extends AppCompatActivity {
     }
 
     public void setupSaveBttn(){
-        // TODO step: 1-5 attempt to save a new SuperPet with associated SuperOwner to AWS db
         findViewById(R.id.AddASuperPetSaveBttn).setOnClickListener(v -> {
             String selectedSuperOwnerStringName = superOwnerSpinner.getSelectedItem().toString();
             try {
@@ -122,6 +106,40 @@ public class AddASuperPetActivity extends AppCompatActivity {
             );
             Toast.makeText(this, "SuperPet Saved!", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    public void setupAddImageButton(){
+        // on click listener -> launch the Image picking intent
+        findViewById(R.id.AddASuperPetImagePicker).setOnClickListener(v -> {
+            launchImageSelectionIntent();
+        });
+    }
+
+    public void launchImageSelectionIntent(){
+        // OnActivityResult
+        Intent imageFilePickingIntent = new Intent(Intent.ACTION_GET_CONTENT); // one of several file picking activities built into Android
+        imageFilePickingIntent.setType("*/*");  // only allow one kind or category of file; if you don't have this, you get a very cryptic error about "No activity found to handle Intent"
+        imageFilePickingIntent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/jpeg", "image/png"});  // only pick JPEG and PNG images
+
+        // Launch Android's built-in file picking activity using our newly created ActivityResultLauncher below
+        activityResultLauncher.launch(imageFilePickingIntent);
+    }
+//
+    private ActivityResultLauncher<Intent> getImagePickingActivityResultLauncher() {
+        ActivityResultLauncher imagePickingActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+
+        )
+
+        return null;
+    }
+
+    public void uploadInputStreamToS3(){
+
+    }
+
+    public void saveSuperPet(){
+
     }
 
 }
