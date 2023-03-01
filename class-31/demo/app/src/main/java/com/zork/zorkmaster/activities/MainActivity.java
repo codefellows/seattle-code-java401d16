@@ -19,6 +19,9 @@ import com.zork.zorkmaster.activities.authActivities.SignUpActivity;
 import com.zork.zorkmaster.adapter.SuperPetRecyclerViewAdapter;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,40 +39,25 @@ public class MainActivity extends AppCompatActivity {
         setupBttns();
         setUpRecyclerView();
 
-//        Amplify.Auth.signUp(
-//                "alex.white@codefellows.com",
-//                "p@ssword",
-//                AuthSignUpOptions.builder()
-//                        .userAttribute(AuthUserAttributeKey.email(), "alex.white@codefellows.com")
-//                        .userAttribute(AuthUserAttributeKey.nickname(), "Firefly")
-//                        .build(),
-//                success -> Log.i(TAG, "Sign Up success!"),
-//                failure -> Log.e(TAG, "Sign up failed with email: alex.white@codefellows.com" + failure)
-//                );
 
-//        Amplify.Auth.confirmSignUp(
-//                "alex.white@codefellows.com",
-//                "212348",
-//                success -> Log.i(TAG, "Confirmed signed up success!"),
-//                failure -> Log.e(TAG, "confirm sign up up failed with email: alex.white@codefellows.com" + failure)
+//        // manual file upload to S3
+//        File exampleFile = new File(getApplicationContext().getFilesDir(), "ExampleKey");
+//
+//        try {
+//                BufferedWriter writer = new BufferedWriter(new FileWriter(exampleFile));
+//                writer.append("Example file contents");
+//                writer.close();
+//            } catch (Exception exception) {
+//                Log.e("MyAmplifyApp", "Upload failed", exception);
+//            }
+//
+//        Amplify.Storage.uploadFile(
+//                "EcampleKey",
+//                exampleFile,
+//                success -> Log.i(TAG, "FILE UPLOADED TO S3"),
+//                failure -> Log.e(TAG, "FAILED TO UPLOAD FILE" + failure)
 //        );
 
-//        Amplify.Auth.signIn(
-//                "alex.white@codefellows.com",
-//                "p@ssword",
-//                success -> Log.i(TAG, "signed in success!"),
-//                failure -> Log.e(TAG, "sign in failed with email: alex.white@codefellows.com" + failure)
-//        );
-
-//        Amplify.Auth.fetchAuthSession(
-//                success -> Log.i(TAG, "CURRENT AUTH SESS" + success),
-//                failure -> Log.e(TAG, "Failed to fetch auth sess" + failure)
-//        );
-
-        // LOGOUT
-//        Amplify.Auth.signOut(
-//                success -> Log.i(TAG, "SIGNED OUT!!!")
-//        );
 
     }
 

@@ -20,6 +20,7 @@ import java.util.List;
 public class SuperPetRecyclerViewAdapter extends RecyclerView.Adapter<SuperPetRecyclerViewAdapter.SuperPetViewHolder> {
     public static final String SUPER_PET_NAME_TAG = "super_pet_name";
     public static final String SUPER_PET_TYPE_TAG = "super_pet_type";
+    public static final String SUPER_PET_IMAGE_KEY_TAG = "super_pet_image_key";
 
     // TODO Step 3-2: // In the RecyclerViewAdapter class, at the top:
     Context callingActivity;
@@ -56,6 +57,7 @@ public class SuperPetRecyclerViewAdapter extends RecyclerView.Adapter<SuperPetRe
         superPetViewHolder.setOnClickListener(v -> {
             Intent goToSuperPetDetailsIntent = new Intent(callingActivity, SuperPetDetails.class);
             goToSuperPetDetailsIntent.putExtra(SUPER_PET_NAME_TAG, superPet.getName());
+            goToSuperPetDetailsIntent.putExtra(SUPER_PET_IMAGE_KEY_TAG, superPet.getS3ImageKey());
             callingActivity.startActivity(goToSuperPetDetailsIntent);
         });
     }
