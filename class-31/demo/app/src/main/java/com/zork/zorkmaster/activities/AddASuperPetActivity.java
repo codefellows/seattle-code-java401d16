@@ -1,16 +1,24 @@
 package com.zork.zorkmaster.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -22,6 +30,8 @@ import com.amplifyframework.datastore.generated.model.SuperPet;
 import com.amplifyframework.datastore.generated.model.SuperPetTypeEnum;
 import com.zork.zorkmaster.R;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -30,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 
 public class AddASuperPetActivity extends AppCompatActivity {
     public final static String TAG = "AddASuperPetActivity";
+    private String s3ImageKey = "";
     Spinner superPetTypeSpinner;
     Spinner superOwnerSpinner;
     CompletableFuture<List<SuperOwner>> superOwnersFuture = new CompletableFuture<>();
@@ -65,7 +76,8 @@ public class AddASuperPetActivity extends AppCompatActivity {
                     Log.e(TAG, "FAILED to read superOwners" + failure);
                 }
         );
-        setupSaveBttn();
+        setupSaveButton();
+        setupAddImageButton();
     }
 
     public void setupSpinners(){
@@ -81,8 +93,13 @@ public class AddASuperPetActivity extends AppCompatActivity {
         ));
     }
 
-    public void setupSaveBttn(){
+    public void setupSaveButton(){
         findViewById(R.id.AddASuperPetSaveBttn).setOnClickListener(v -> {
+            saveSuperPet();
+        });
+    }
+
+    public void saveSuperPet(){
             String selectedSuperOwnerStringName = superOwnerSpinner.getSelectedItem().toString();
             try {
                 superOwners = (ArrayList<SuperOwner>) superOwnersFuture.get();
@@ -97,6 +114,8 @@ public class AddASuperPetActivity extends AppCompatActivity {
                     .type((SuperPetTypeEnum) superPetTypeSpinner.getSelectedItem())
                     .height(Integer.parseInt(((EditText)findViewById(R.id.AddASuperPetETHeight)).getText().toString()))
                     .superOwner(selectedOwner)
+                    .s3ImageKey(s3ImageKey)
+                    // TODO edit schema to include a string for s3Image Key
                     .build();
 
             Amplify.API.mutate(
@@ -105,7 +124,6 @@ public class AddASuperPetActivity extends AppCompatActivity {
                     failure -> Log.e(TAG, "FAILED to make superPet", failure)
             );
             Toast.makeText(this, "SuperPet Saved!", Toast.LENGTH_SHORT).show();
-        });
     }
 
     public void setupAddImageButton(){
@@ -128,18 +146,70 @@ public class AddASuperPetActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> getImagePickingActivityResultLauncher() {
         ActivityResultLauncher imagePickingActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Uri pickedImageFileUri = result.getData().getData();
+                        try {
+                            InputStream pickedImageInputStream = getContentResolver().openInputStream(pickedImageFileUri);
+                            String pickedImageFileName = getFileNameFromUri(pickedImageFileUri);
+                            Log.i(TAG, "Successfully got the image: " + pickedImageFileName);
+                            uploadInputStreamToS3(pickedImageInputStream, pickedImageFileName, pickedImageFileUri);
+                        } catch (FileNotFoundException fnfe) {
+                            Log.e(TAG, "Could not get file from picker! " + fnfe);
+                        }
 
-        )
+                    }
+                }
+        );
 
-        return null;
+        return imagePickingActivityResultLauncher;
     }
 
-    public void uploadInputStreamToS3(){
-
+    public void uploadInputStreamToS3(InputStream pickedImageInputStream, String pickedImageFileName, Uri pickedImageFileUri){
+        // upload to s3
+        Amplify.Storage.uploadInputStream(
+                pickedImageFileName,
+                pickedImageInputStream,
+                success -> {
+                    Log.i(TAG, "SUCCESS! Uploaded file to S3! Filename is: " + success.getKey());
+                    s3ImageKey = pickedImageFileName;
+                    ImageView superPetImageView = findViewById(R.id.AddASuperPetImagePicker);
+                    InputStream pickedImageInputStreamCopy = null;
+                    try {
+                        pickedImageInputStreamCopy = getContentResolver().openInputStream(pickedImageFileUri);
+                    } catch (FileNotFoundException fnfe) {
+                        Log.e(TAG, "Could not get file stream from URI! " + fnfe.getMessage(), fnfe);
+                    }
+                    superPetImageView.setImageBitmap(BitmapFactory.decodeStream(pickedImageInputStreamCopy));
+                    // render chosen image to view
+                },
+                failure -> Log.e(TAG, "FAILED to upload file to S3 with filename: " + pickedImageFileName + " with error: " + failure)
+        );
     }
 
-    public void saveSuperPet(){
-
+    // Taken from https://stackoverflow.com/a/25005243/16889809
+    @SuppressLint("Range")
+    public String getFileNameFromUri(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
 }

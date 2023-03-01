@@ -32,11 +32,13 @@ public final class SuperPet implements Model {
   public static final QueryField TYPE = field("SuperPet", "type");
   public static final QueryField HEIGHT = field("SuperPet", "height");
   public static final QueryField SUPER_OWNER = field("SuperPet", "superOwnerId");
+  public static final QueryField S3_IMAGE_KEY = field("SuperPet", "s3ImageKey");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="String", isRequired = true) String name;
   private final @ModelField(targetType="SuperPetTypeEnum") SuperPetTypeEnum type;
   private final @ModelField(targetType="Int") Integer height;
   private final @ModelField(targetType="SuperOwner") @BelongsTo(targetName = "superOwnerId", type = SuperOwner.class) SuperOwner superOwner;
+  private final @ModelField(targetType="String") String s3ImageKey;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   public String getId() {
@@ -59,6 +61,10 @@ public final class SuperPet implements Model {
       return superOwner;
   }
   
+  public String getS3ImageKey() {
+      return s3ImageKey;
+  }
+  
   public Temporal.DateTime getCreatedAt() {
       return createdAt;
   }
@@ -67,12 +73,13 @@ public final class SuperPet implements Model {
       return updatedAt;
   }
   
-  private SuperPet(String id, String name, SuperPetTypeEnum type, Integer height, SuperOwner superOwner) {
+  private SuperPet(String id, String name, SuperPetTypeEnum type, Integer height, SuperOwner superOwner, String s3ImageKey) {
     this.id = id;
     this.name = name;
     this.type = type;
     this.height = height;
     this.superOwner = superOwner;
+    this.s3ImageKey = s3ImageKey;
   }
   
   @Override
@@ -88,6 +95,7 @@ public final class SuperPet implements Model {
               ObjectsCompat.equals(getType(), superPet.getType()) &&
               ObjectsCompat.equals(getHeight(), superPet.getHeight()) &&
               ObjectsCompat.equals(getSuperOwner(), superPet.getSuperOwner()) &&
+              ObjectsCompat.equals(getS3ImageKey(), superPet.getS3ImageKey()) &&
               ObjectsCompat.equals(getCreatedAt(), superPet.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), superPet.getUpdatedAt());
       }
@@ -101,6 +109,7 @@ public final class SuperPet implements Model {
       .append(getType())
       .append(getHeight())
       .append(getSuperOwner())
+      .append(getS3ImageKey())
       .append(getCreatedAt())
       .append(getUpdatedAt())
       .toString()
@@ -116,6 +125,7 @@ public final class SuperPet implements Model {
       .append("type=" + String.valueOf(getType()) + ", ")
       .append("height=" + String.valueOf(getHeight()) + ", ")
       .append("superOwner=" + String.valueOf(getSuperOwner()) + ", ")
+      .append("s3ImageKey=" + String.valueOf(getS3ImageKey()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
@@ -140,6 +150,7 @@ public final class SuperPet implements Model {
       null,
       null,
       null,
+      null,
       null
     );
   }
@@ -149,7 +160,8 @@ public final class SuperPet implements Model {
       name,
       type,
       height,
-      superOwner);
+      superOwner,
+      s3ImageKey);
   }
   public interface NameStep {
     BuildStep name(String name);
@@ -162,6 +174,7 @@ public final class SuperPet implements Model {
     BuildStep type(SuperPetTypeEnum type);
     BuildStep height(Integer height);
     BuildStep superOwner(SuperOwner superOwner);
+    BuildStep s3ImageKey(String s3ImageKey);
   }
   
 
@@ -171,6 +184,7 @@ public final class SuperPet implements Model {
     private SuperPetTypeEnum type;
     private Integer height;
     private SuperOwner superOwner;
+    private String s3ImageKey;
     @Override
      public SuperPet build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -180,7 +194,8 @@ public final class SuperPet implements Model {
           name,
           type,
           height,
-          superOwner);
+          superOwner,
+          s3ImageKey);
     }
     
     @Override
@@ -208,6 +223,12 @@ public final class SuperPet implements Model {
         return this;
     }
     
+    @Override
+     public BuildStep s3ImageKey(String s3ImageKey) {
+        this.s3ImageKey = s3ImageKey;
+        return this;
+    }
+    
     /** 
      * @param id id
      * @return Current Builder instance, for fluent method chaining
@@ -220,12 +241,13 @@ public final class SuperPet implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String name, SuperPetTypeEnum type, Integer height, SuperOwner superOwner) {
+    private CopyOfBuilder(String id, String name, SuperPetTypeEnum type, Integer height, SuperOwner superOwner, String s3ImageKey) {
       super.id(id);
       super.name(name)
         .type(type)
         .height(height)
-        .superOwner(superOwner);
+        .superOwner(superOwner)
+        .s3ImageKey(s3ImageKey);
     }
     
     @Override
@@ -246,6 +268,11 @@ public final class SuperPet implements Model {
     @Override
      public CopyOfBuilder superOwner(SuperOwner superOwner) {
       return (CopyOfBuilder) super.superOwner(superOwner);
+    }
+    
+    @Override
+     public CopyOfBuilder s3ImageKey(String s3ImageKey) {
+      return (CopyOfBuilder) super.s3ImageKey(s3ImageKey);
     }
   }
   

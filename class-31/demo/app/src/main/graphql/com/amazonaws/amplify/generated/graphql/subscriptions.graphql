@@ -11,6 +11,7 @@ subscription OnCreateSuperOwner {
         superOwnerId
         type
         height
+        s3ImageKey
         createdAt
         updatedAt
       }
@@ -32,6 +33,7 @@ subscription OnUpdateSuperOwner {
         superOwnerId
         type
         height
+        s3ImageKey
         createdAt
         updatedAt
       }
@@ -53,6 +55,7 @@ subscription OnDeleteSuperOwner {
         superOwnerId
         type
         height
+        s3ImageKey
         createdAt
         updatedAt
       }
@@ -79,6 +82,7 @@ subscription OnCreateSuperPet {
       createdAt
       updatedAt
     }
+    s3ImageKey
     createdAt
     updatedAt
   }
@@ -100,6 +104,7 @@ subscription OnUpdateSuperPet {
       createdAt
       updatedAt
     }
+    s3ImageKey
     createdAt
     updatedAt
   }
@@ -121,6 +126,7 @@ subscription OnDeleteSuperPet {
       createdAt
       updatedAt
     }
+    s3ImageKey
     createdAt
     updatedAt
   }

@@ -40,23 +40,23 @@ public class MainActivity extends AppCompatActivity {
         setUpRecyclerView();
 
 
-        // manual file upload to S3
-        File exampleFile = new File(getApplicationContext().getFilesDir(), "ExampleKey");
-
-        try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(exampleFile));
-                writer.append("Example file contents");
-                writer.close();
-            } catch (Exception exception) {
-                Log.e("MyAmplifyApp", "Upload failed", exception);
-            }
-
-        Amplify.Storage.uploadFile(
-                "EcampleKey",
-                exampleFile,
-                success -> Log.i(TAG, "FILE UPLOADED TO S3"),
-                failure -> Log.e(TAG, "FAILED TO UPLOAD FILE" + failure)
-        );
+//        // manual file upload to S3
+//        File exampleFile = new File(getApplicationContext().getFilesDir(), "ExampleKey");
+//
+//        try {
+//                BufferedWriter writer = new BufferedWriter(new FileWriter(exampleFile));
+//                writer.append("Example file contents");
+//                writer.close();
+//            } catch (Exception exception) {
+//                Log.e("MyAmplifyApp", "Upload failed", exception);
+//            }
+//
+//        Amplify.Storage.uploadFile(
+//                "EcampleKey",
+//                exampleFile,
+//                success -> Log.i(TAG, "FILE UPLOADED TO S3"),
+//                failure -> Log.e(TAG, "FAILED TO UPLOAD FILE" + failure)
+//        );
 
 
     }
