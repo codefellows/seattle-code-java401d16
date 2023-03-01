@@ -86,15 +86,15 @@ public class MainActivity extends AppCompatActivity {
     public void renderButtons(){
         // Conditional Button Rendering
         // if authUser is null -> Show signUp/login bttn and hide logout bttns
-        if (authUser == null) {
+        if (authUser != null) {
+            // if authUser is notNull -> Show logout and hide signUp/login bttns
+//            signUpButton.setVisibility(View.INVISIBLE);
+//            loginButton.setVisibility(View.INVISIBLE);
+            logoutButton.setVisibility(View.VISIBLE);
+        } else if (authUser == null) {
             signUpButton.setVisibility(View.VISIBLE);
             loginButton.setVisibility(View.VISIBLE);
             logoutButton.setVisibility(View.INVISIBLE);
-        } else if (authUser != null) {
-            // if authUser is notNull -> Show logout and hide signUp/login bttns
-            signUpButton.setVisibility(View.INVISIBLE);
-            loginButton.setVisibility(View.INVISIBLE);
-            logoutButton.setVisibility(View.VISIBLE);
         }
     }
 

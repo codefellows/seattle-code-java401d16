@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 
 import com.amplifyframework.core.Amplify;
@@ -37,6 +38,9 @@ public class LoginActivity extends AppCompatActivity {
                     failure -> Log.e(TAG, "FAILED to login user: " + userEmail + "with error code: " + failure)
             );
             // redirect to  Main Activity
+            // hide login and signup on success!
+            findViewById(R.id.MainActivityButtonSignUp).setVisibility(View.INVISIBLE);
+            findViewById(R.id.MainActivityButtonLogin).setVisibility(View.INVISIBLE);
             Intent goToMainActivityIntent = new Intent(this, MainActivity.class);
             startActivity(goToMainActivityIntent);
         });
