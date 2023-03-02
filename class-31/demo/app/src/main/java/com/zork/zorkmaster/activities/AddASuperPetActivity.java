@@ -4,13 +4,18 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.*;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
@@ -28,13 +33,23 @@ import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.SuperOwner;
 import com.amplifyframework.datastore.generated.model.SuperPet;
 import com.amplifyframework.datastore.generated.model.SuperPetTypeEnum;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.zork.zorkmaster.R;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -47,11 +62,19 @@ public class AddASuperPetActivity extends AppCompatActivity {
     ArrayList<String> ownerNames;
     ArrayList<SuperOwner> superOwners;
     ActivityResultLauncher<Intent> activityResultLauncher;
+    //TODO: Step 1-1 Add gradle dependency and request perissions in AndroidManifest
+    //TODO: Step 1-2 setup fusedLocationProviderClient
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private Geocoder geocoder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_asuper_pet);
+        //TODO: Step 1-2 initialize fusedLocationProviderClient
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        geocoder = new Geocoder(this, Locale.getDefault());
 
         // WARNING: The ActivityResultLauncher MUST be initialized in onCreate(), not in onResume() or a click handler! Otherwise it will fail
         activityResultLauncher = getImagePickingActivityResultLauncher();
@@ -78,7 +101,94 @@ public class AddASuperPetActivity extends AppCompatActivity {
         );
         setupSaveButton();
         setupAddImageButton();
+//        getLocation();
+        getLocationsUpdates();
     }
+
+    private void getLocation() {
+        // TODO 1-3 implement getLastLocation
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location == null) {
+                Log.e(TAG, "Location callback was null");
+            }
+            String currentLatitude = Double.toString(location.getLatitude());
+            String currentLongitude = Double.toString(location.getLongitude());
+            Log.i(TAG, "Our Latitude: " + currentLatitude);
+            Log.i(TAG, "Our Longitude: " + currentLongitude);
+        });
+
+        // TODO 1-4 implement getCurrentLocation -> more up to date and accurate -> Downside is it is ACTIVE which means using resources
+        fusedLocationProviderClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
+            @NonNull
+            @Override
+            public CancellationToken onCanceledRequested(@NonNull OnTokenCanceledListener onTokenCanceledListener) {
+                return null;
+            }
+
+            @Override
+            public boolean isCancellationRequested() {
+                return false;
+            }
+        }).addOnSuccessListener(location -> {
+            if (location == null) {
+                Log.e(TAG, "Location callback was null");
+            }
+            String currentLatitude = Double.toString(location.getLatitude());
+            String currentLongitude = Double.toString(location.getLongitude());
+            Log.i(TAG, "Our Latitude: " + currentLatitude);
+            Log.i(TAG, "Our Longitude: " + currentLongitude);
+        });
+    }
+
+    private void getLocationsUpdates() {
+        //TODO Step 1-5 implement requestLocationUpdates with our Geocoder
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(5 * 1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationCallback locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                // grab lat and long
+                try {
+                // create a geogoder(String of address aka human readable)
+                    String address = geocoder.getFromLocation(
+                                    locationResult.getLastLocation().getLatitude(),
+                                    locationResult.getLastLocation().getLongitude(),
+                                    1) // 1 ->  give the best result
+                            .get(0)
+                            .getAddressLine(0); // first line of the address
+                    Log.i(TAG, "Repeating current location is: " + address);
+                } catch (IOException ioe) {
+                    Log.i(TAG, "Could not get location: " + ioe);
+                }
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, getMainLooper());
+    }
+
+
 
     public void setupSpinners(){
         superPetTypeSpinner.setAdapter(new ArrayAdapter<>(
@@ -211,5 +321,7 @@ public class AddASuperPetActivity extends AppCompatActivity {
         }
         return result;
     }
+
+
 
 }
