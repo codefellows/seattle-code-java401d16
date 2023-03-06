@@ -22,5 +22,19 @@ export type AmplifyDependentResourcesAttributes = {
             "BucketName": "string",
             "Region": "string"
         }
+    },
+    "analytics": {
+        "zorkiemaster": {
+            "Region": "string",
+            "Id": "string",
+            "appName": "string"
+        }
+    },
+    "predictions": {
+        "speechGenerator14697e6f": {
+            "region": "string",
+            "language": "string",
+            "voice": "string"
+        }
     }
 }

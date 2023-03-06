@@ -1,0 +1,21 @@
+{
+    "appName": "zorkiemaster",
+    "roleName": "pinpointLambdaRole3ac9c7a4",
+    "cloudformationPolicyName": "cloudformationPolicy3ac9c7a4",
+    "cloudWatchPolicyName": "cloudWatchPolicy3ac9c7a4",
+    "pinpointPolicyName": "pinpointPolicy3ac9c7a4",
+    "authPolicyName": "pinpoint_amplify_3ac9c7a4",
+    "unauthPolicyName": "pinpoint_amplify_3ac9c7a4",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}
