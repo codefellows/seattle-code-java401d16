@@ -3,9 +3,7 @@ package com.cyberZork.d16Security.controllers;
 import com.cyberZork.d16Security.models.SiteUser;
 import com.cyberZork.d16Security.repositories.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -62,7 +61,9 @@ public class SiteUserController {
             throw new RuntimeException("Oh dear, something went wrong");
         }
 
-        return "index.html";
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "There is a conflict");
+//        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error with the server");
+//        return "index.html";
     }
 
 
